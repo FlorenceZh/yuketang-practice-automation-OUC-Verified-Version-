@@ -212,11 +212,11 @@ Word 层：
 - 复习文档：运行 `python scripts\create_question_bank_docx.py`
 - AI 建议：`data/ai-suggestions.jsonl`
 
-如果同学复现失败，优先让他保留对应轮次的 `data/raw/...`，尤其是 `cover.txt`、`started.txt`、`paper.json`、`submit.json`，再根据实际页面调整选择器。
+如果同学复现失败，保留对应轮次的 `data/raw/...`，尤其是 `cover.txt`、`started.txt`、`paper.json`、`submit.json`，再根据实际页面调整选择器。
 
-## 11. 给同学的最小交付包
+## 11. 最小交付包
 
-可以给：
+如下：
 
 - `src/`
 - `scripts/`
@@ -226,14 +226,6 @@ Word 层：
 - `package-lock.json`
 - `secrets/yuketang-cookies.example.json`
 
-不要给：
-
-- `data/`
-- `secrets/yuketang-cookies.json`
-- `.playwright-profile/`
-- 真实课程 URL、真实 exam id、用户 id、课堂 id
-- 已采集题库和答案
-- 带个人信息的截图、网络日志、Word 题库
 
 ## 12. 常见故障
 
