@@ -82,5 +82,3 @@ Word 生成脚本会读取 `data/question-bank.json`，输出排版后的复习�
 ## 复现和开源
 
 完整复现流程见 [docs/WORKFLOW.md](docs/WORKFLOW.md)。
-
-开源前的判断和清理清单见 [docs/OPEN_SOURCE.md](docs/OPEN_SOURCE.md)。简短结论：这套工具适合整理成“授权练习采集/本地题库整理工具”，不适合带着真实课程链接、题库数据、Cookie、登录状态或快刷默认配置直接公开。
