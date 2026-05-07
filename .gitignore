@@ -1,0 +1,10 @@
+node_modules/
+data/
+secrets/
+.playwright-profile/
+docx_render/
+.env
+*.log
+*.docx
+*.xlsx
+*.csv
