@@ -67,7 +67,7 @@ npm.cmd run fast -- --exam-id "<exam_id>" --attempts 50 --stable 3 --time-budget
 - `data/fast-attempts.jsonl`：快跑版每轮提交和新增题记录。
 - `data/ai-suggestions.jsonl`：AI 对未知题的建议、置信度和复核标记。
 - `data/raw/attempt-*` / `data/raw/fast2-*`：每轮页面文本、HTML、截图、接口 JSON 等排查材料。
-- `毛概题库_排版复习版.docx`：由 `scripts/create_question_bank_docx.py` 从本地题库生成的 Word 复习版。
+- `题库_排版复习版.docx`：由 `scripts/create_question_bank_docx.py` 从本地题库生成的 Word 复习版。
 
 `data/`、`secrets/`、`.playwright-profile/` 默认已被 `.gitignore` 忽略，不应该提交。
 
