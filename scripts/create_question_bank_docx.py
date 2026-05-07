@@ -13,7 +13,7 @@ from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 BANK_PATH = ROOT / "data" / "question-bank.json"
-OUT_PATH = ROOT / "毛概题库_排版复习版.docx"
+OUT_PATH = ROOT / "题库_排版复习版.docx"
 
 FONT_BODY = "Microsoft YaHei"
 COLOR_BLUE = RGBColor(31, 91, 142)
@@ -280,7 +280,7 @@ def build_docx():
         for idx, question in group:
             add_question(doc, question, idx)
 
-    doc.core_properties.title = "毛概题库复习版"
+    doc.core_properties.title = "题库排版复习版"
     doc.core_properties.subject = "雨课堂题库整理"
     doc.core_properties.author = "Codex"
     doc.save(OUT_PATH)
