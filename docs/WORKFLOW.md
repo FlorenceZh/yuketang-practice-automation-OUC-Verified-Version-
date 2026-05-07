@@ -126,11 +126,18 @@ npm.cmd run ykt -- --url "https://oucbk.yuketang.cn/pro/lms/<course>/<classroom>
 npm.cmd run ykt -- --url "https://oucbk.yuketang.cn/pro/lms/<course>/<classroom>/exam/<leaf>" --auto-fill --ai-fill --ai-min-confidence 0.85 --unknown-policy skip
 ```
 
+让 AI 在第一遍直接填写所有未知题：
+
+```powershell
+npm.cmd run ykt -- --url "https://oucbk.yuketang.cn/pro/lms/<course>/<classroom>/exam/<leaf>" --auto-fill --ai-force-fill --unknown-policy skip
+```
+
 快跑版也支持：
 
 ```powershell
 npm.cmd run fast -- --exam-id "<exam_id>" --attempts 10 --stable 3 --ai-suggest
 npm.cmd run fast -- --exam-id "<exam_id>" --attempts 10 --stable 3 --ai-fill --ai-min-confidence 0.85
+npm.cmd run fast -- --exam-id "<exam_id>" --attempts 10 --stable 3 --ai-force-fill
 ```
 
 输出：
@@ -144,6 +151,8 @@ npm.cmd run fast -- --exam-id "<exam_id>" --attempts 10 --stable 3 --ai-fill --a
 - `confidence < 0.85` 不自动采纳。
 - 政治理论题、概念辨析题、带“根本/首要/唯一/决定性”等绝对词的题，即使高置信度也建议人工看一眼。
 - AI 建议不要写回 `correctLabels`；只有结果页或接口回收的标准答案才进入题库。
+
+如果使用 `--ai-force-fill`，上面的人工判断规则会被跳过：只要 AI 返回可识别选项，脚本就会直接填写，并在日志中标记来源为 `ai-force`。这适合明确声明“第一遍由 AI 作答，可能出错”的非计分练习场景。
 
 模型默认读取 `OPENAI_MODEL`，没设置时使用脚本默认模型。也可以显式传：
 

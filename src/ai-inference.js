@@ -162,6 +162,47 @@ async function inferAnswerWithAI(question, options = {}) {
   return normalizeSuggestion(parsed, promptQuestion, model, body);
 }
 
+function labelsKey(labels) {
+  return [...new Set((labels || []).map((label) => String(label).toUpperCase()))].sort().join(",");
+}
+
+async function inferAnswerWithAIConsensus(question, options = {}) {
+  const rounds = Math.max(1, Math.min(5, Number(options.rounds || 1)));
+  if (rounds === 1) return inferAnswerWithAI(question, options);
+
+  const votes = [];
+  for (let index = 0; index < rounds; index += 1) {
+    votes.push(await inferAnswerWithAI(question, options));
+  }
+
+  const counts = new Map();
+  for (const vote of votes) {
+    const key = labelsKey(vote.labels);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  }
+  const [bestKey, bestCount] = [...counts.entries()].sort((a, b) => b[1] - a[1])[0] || ["", 0];
+  const matchingVotes = votes.filter((vote) => labelsKey(vote.labels) === bestKey);
+  const bestVote = matchingVotes[0] || votes[0];
+  const unanimous = bestCount === rounds;
+
+  return {
+    ...bestVote,
+    confidence: Math.min(...matchingVotes.map((vote) => vote.confidence)),
+    needsReview: !unanimous || matchingVotes.some((vote) => vote.needsReview),
+    consensus: {
+      rounds,
+      bestCount,
+      unanimous,
+      votes: votes.map((vote) => ({
+        labels: vote.labels,
+        confidence: vote.confidence,
+        needsReview: vote.needsReview,
+        reason: vote.reason
+      }))
+    }
+  };
+}
+
 function appendAISuggestion(event, filePath = AI_SUGGESTIONS_JSONL) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.appendFileSync(filePath, `${JSON.stringify(event)}\n`, "utf8");
@@ -172,5 +213,6 @@ module.exports = {
   DEFAULT_MODEL,
   appendAISuggestion,
   inferAnswerWithAI,
+  inferAnswerWithAIConsensus,
   questionForAI
 };

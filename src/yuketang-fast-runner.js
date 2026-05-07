@@ -46,6 +46,8 @@ function parseArgs(argv) {
       args.aiMode = "suggest";
     } else if (token === "--ai-fill") {
       args.aiMode = "fill";
+    } else if (token === "--ai-force-fill") {
+      args.aiMode = "force";
     } else if (token === "--ai-model") {
       args.aiModel = String(next || "");
       i += 1;
@@ -69,8 +71,8 @@ function parseArgs(argv) {
   if (!Number.isFinite(args.stable) || args.stable < 1) {
     throw new Error("--stable must be a positive number");
   }
-  if (!["off", "suggest", "fill"].includes(args.aiMode)) {
-    throw new Error("AI mode must be off, suggest, or fill.");
+  if (!["off", "suggest", "fill", "force"].includes(args.aiMode)) {
+    throw new Error("AI mode must be off, suggest, fill, or force.");
   }
   if (!Number.isFinite(args.aiMinConfidence) || args.aiMinConfidence < 0 || args.aiMinConfidence > 1) {
     throw new Error("--ai-min-confidence must be between 0 and 1");
@@ -302,12 +304,16 @@ async function answerForWithAI(problem, question, bank, args, attemptId) {
     appendAISuggestion(event);
 
     if (
-      args.aiMode === "fill" &&
+      (args.aiMode === "fill" || args.aiMode === "force") &&
       suggestion.labels.length &&
-      !suggestion.needsReview &&
-      suggestion.confidence >= args.aiMinConfidence
+      (args.aiMode === "force" || (!suggestion.needsReview && suggestion.confidence >= args.aiMinConfidence))
     ) {
-      return { result: resultForLabels(problem, suggestion.labels), source: "ai", labels: suggestion.labels, suggestion };
+      return {
+        result: resultForLabels(problem, suggestion.labels),
+        source: args.aiMode === "force" ? "ai-force" : "ai",
+        labels: suggestion.labels,
+        suggestion
+      };
     }
     return { ...known, source: "fallback-after-ai-suggest", suggestion };
   } catch (error) {

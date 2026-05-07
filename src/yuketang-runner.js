@@ -104,6 +104,8 @@ function parseArgs(argv) {
       args.aiMode = "suggest";
     } else if (token === "--ai-fill") {
       args.aiMode = "fill";
+    } else if (token === "--ai-force-fill") {
+      args.aiMode = "force";
     } else if (token === "--ai-model") {
       args.aiModel = String(next || "");
       i += 1;
@@ -139,8 +141,8 @@ function parseArgs(argv) {
   if (!Number.isFinite(args.maxAttempts) || args.maxAttempts < 1) {
     throw new Error("--max-attempts must be a positive number");
   }
-  if (!["off", "suggest", "fill"].includes(args.aiMode)) {
-    throw new Error("AI mode must be off, suggest, or fill.");
+  if (!["off", "suggest", "fill", "force"].includes(args.aiMode)) {
+    throw new Error("AI mode must be off, suggest, fill, or force.");
   }
   if (!Number.isFinite(args.aiMinConfidence) || args.aiMinConfidence < 0 || args.aiMinConfidence > 1) {
     throw new Error("--ai-min-confidence must be between 0 and 1");
@@ -166,6 +168,7 @@ Options:
   --unknown-policy <mode>      skip, first, or random. Default: skip.
   --ai-suggest                 Ask AI for unknown-question suggestions and record them only.
   --ai-fill                    Fill unknown questions only when AI confidence passes --ai-min-confidence.
+  --ai-force-fill              Fill unknown questions with AI suggestions even when confidence is low.
   --ai-model <model>           OpenAI model for AI suggestions. Defaults to OPENAI_MODEL or gpt-5-mini.
   --ai-min-confidence <0-1>    Minimum confidence for --ai-fill. Default: 0.75.
   --headed false               Run browser headless.
@@ -1562,14 +1565,15 @@ async function runAttempt(context, args, bank, attemptIndex) {
                 model: aiResult.suggestion.model
               }
             : { error: aiResult.error };
-          if (
+          const canUseConfidentAI =
             args.aiMode === "fill" &&
             aiResult.suggestion &&
             !aiResult.suggestion.needsReview &&
-            aiResult.suggestion.confidence >= args.aiMinConfidence
-          ) {
+            aiResult.suggestion.confidence >= args.aiMinConfidence;
+          const canForceAI = args.aiMode === "force" && aiResult.suggestion && aiResult.answers.length;
+          if (canUseConfidentAI || canForceAI) {
             answers = aiResult.answers;
-            answerSource = "ai";
+            answerSource = canForceAI ? "ai-force" : "ai";
           }
         }
         if (!answers.length) {

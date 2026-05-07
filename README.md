@@ -45,7 +45,13 @@ npm.cmd run ykt -- --url "https://oucbk.yuketang.cn/pro/lms/<course>/<classroom>
 npm.cmd run ykt -- --url "https://oucbk.yuketang.cn/pro/lms/<course>/<classroom>/exam/<leaf>" --auto-fill --ai-fill --ai-min-confidence 0.85 --unknown-policy skip
 ```
 
-建议先用 `--ai-suggest` 让人看建议；确认这种课和题型表现稳定后，再在非计分练习里尝试 `--ai-fill`。AI 建议不会写成标准答案，标准答案仍然只来自题库和结果页回收。
+让 AI 在第一遍直接作答所有未知题：
+
+```powershell
+npm.cmd run ykt -- --url "https://oucbk.yuketang.cn/pro/lms/<course>/<classroom>/exam/<leaf>" --auto-fill --ai-force-fill --unknown-policy skip
+```
+
+建议先用 `--ai-suggest` 让人看建议；确认这种课和题型表现稳定后，再在非计分练习里尝试 `--ai-fill` 或 `--ai-force-fill`。`--ai-force-fill` 会忽略置信度和复核标记，第一遍正确率取决于 AI 推断，可能出错。AI 建议不会写成标准答案，标准答案仍然只来自题库和结果页回收。
 
 已经确认练习页能进入、想快速刷随机题库时，可使用快跑版。`--exam-id` 是进入真实答题页后 URL 或网络请求里的考试 ID，不要写进公开仓库。
 
